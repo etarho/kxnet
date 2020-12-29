@@ -1,0 +1,91 @@
+<PlusConfiguration version="2.1">
+  <DataCollection StartupDelaySec="1.0" >
+    <DeviceSet
+      Name="Evaluation Setups"
+      Description="Broadcasting tool tracking data through OpenIGTLink
+For NDI Vega: Tool (8700339), Stylus (8700340), Reference (8700449), Endscope (custom_001)" />
+    <Device
+      Id="TrackerDevice"
+      Type="PolarisTracker"
+      ToolReferenceFrame="Tracker" >
+      <DataSources>
+        <DataSource Type="Tool" Id="Tool" RomFile="NdiToolDefinitions/8700339.rom"  />
+        <DataSource Type="Tool" Id="Stylus" RomFile="NdiToolDefinitions/8700340.rom"  />
+        <DataSource Type="Tool" Id="Reference" RomFile="NdiToolDefinitions/8700449.rom"  />
+        <DataSource Type="Tool" Id="Forceps" RomFile="NdiToolDefinitions/custom_001.rom"  />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="TrackerStream" >
+          <DataSource Id="Tool"/>
+          <DataSource Id="Stylus"/>
+          <DataSource Id="Reference"/>
+          <DataSource Id="Forceps"/>
+        </OutputChannel>
+      </OutputChannels>
+    </Device>
+    <Device
+      Id="VideoDevice"
+      Type="MmfVideo"
+      FrameSize="1920 1080"
+      VideoFormat="YUY2"
+      CaptureDeviceId="0" >
+      <DataSources>
+        <DataSource Type="Video" Id="Video" PortUsImageOrientation="MF" ImageType="RGB_COLOR"  />
+      </DataSources>
+      <OutputChannels>
+        <OutputChannel Id="VideoStream" VideoDataSourceId="Video" />
+      </OutputChannels>
+    </Device>
+    <Device
+      Id="TrackedVideoDevice"
+      Type="VirtualMixer" >
+      <InputChannels>
+        <InputChannel Id="TrackerStream" />
+        <InputChannel Id="VideoStream" />
+      </InputChannels>
+      <OutputChannels>
+        <OutputChannel Id="TrackedVideoStream"/>
+      </OutputChannels>
+    </Device>
+  </DataCollection>
+  <CoordinateDefinitions>
+    <Transform From="Image" To="Reference"
+      Matrix="
+        1 0 0 0
+        0 1 0 0
+        0 0 1 0
+        0 0 0 1"
+       Error="0.554951" Date="012617_105449" />
+    <Transform From="StylusTip" To="Stylus"
+      Matrix="
+        1 0 0.000203823 0.0180449
+        3.31529e-09 -1  -1.62655e-05  -0.00144002
+        0.000203823 1.62655e-05 -1  -88.5321
+        0 0 0 1"
+       Error="0.554951" Date="012617_105449" />
+  </CoordinateDefinitions>
+  <PlusOpenIGTLinkServer
+    MaxNumberOfIgtlMessagesToSend="5"
+    MaxTimeSpentWithProcessingMs="50"
+    ListeningPort="18944"
+    SendValidTransformsOnly="true"
+    OutputChannelId="TrackedVideoStream" >
+    <DefaultClientInfo>
+      <MessageTypes>
+        <Message Type="IMAGE" />
+        <Message Type="TRANSFORM" />
+      </MessageTypes>
+      <ImageNames>
+        <Image Name="Image" EmbeddedTransformToFrame="Reference" />
+      </ImageNames>
+      <TransformNames>
+        <Transform Name="StylusTipToReference" />
+        <Transform Name="ToolToReference" />
+        <Transform Name="ToolToTracker" />
+        <Transform Name="StylusToTracker" />
+        <Transform Name="ReferenceToTracker" />
+        <Transform Name="ForcepsToReference" />
+      </TransformNames>
+    </DefaultClientInfo>
+  </PlusOpenIGTLinkServer>
+</PlusConfiguration>

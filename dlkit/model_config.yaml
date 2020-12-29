@@ -1,0 +1,8 @@
+res50:
+  input_size: [224, 224]
+  
+res50_448:
+  input_size: [448, 448]
+  
+resat50_448:
+  input_size: [448, 448]
